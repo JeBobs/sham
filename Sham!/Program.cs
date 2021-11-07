@@ -1,16 +1,17 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Reflection;
 
-using static Sham_.JointedMeshSkeleton;
-using static Sham_.CommandDirectory;
-using static Sham_.UserInterface;
+using static Sham.JointedMeshSkeleton;
+using static Sham.CommandDirectory;
+using static Sham.UserInterface;
 
-namespace Sham_
+namespace Sham
 {
     class Program
     {
-        public static int DebugLevel = 0;
+        public static int DebugLevel;
         public static AssemblyName AppInfo;
         static void Main(string[] args)
         {
@@ -80,7 +81,7 @@ namespace Sham_
 
         static void Command_Help(string command = "")
         {
-            string h = command != "" ? command : AppInfo.Name;
+            string h = !string.IsNullOrEmpty(command) ? command : AppInfo.Name;
             Console.WriteLine("Help for " + h + ":");
 
             h = "\n\t[ ] indicates a required argument.\n\t< > indicates an optional argument.\n\n";
@@ -127,11 +128,11 @@ namespace Sham_
                 foreach (string line in h)
                 {
                     TryPrintDebug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " + line, 4);
-                    if (line.StartsWith(";"))
+                    if (line.StartsWith(";", StringComparison.OrdinalIgnoreCase))
                     {
                         TryPrintDebug("Hit comment line, ignoring.", 2);
                     }
-                    else if (line.StartsWith(Environment.NewLine) || line == (""))
+                    else if (line.StartsWith(Environment.NewLine, StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(line))
                     {
                         TryPrintDebug("Hit blank line, ignoring.", 2);
                     }
@@ -178,7 +179,7 @@ namespace Sham_
                                         break;
 
                                     case 1:
-                                        int.TryParse(line, out NodeBuffer.ParentNodeIndex);
+                                        _ = int.TryParse(line, out NodeBuffer.ParentNodeIndex);
                                         TryPrintDebug("Setting parent node index to " + NodeBuffer.ParentNodeIndex + ".", 2);
                                         break;
 
@@ -237,7 +238,7 @@ namespace Sham_
                                         break;
 
                                     case 1:
-                                        int.TryParse(System.Text.RegularExpressions.Regex.Match(line, @"[0-9]+").Value, out MaterialBuffer.MaterialSlotIndex);
+                                        _ = int.TryParse(System.Text.RegularExpressions.Regex.Match(line, @"[0-9]+").Value, out MaterialBuffer.MaterialSlotIndex);
                                         TryPrintDebug("Setting material slot index to " + MaterialBuffer.MaterialSlotIndex + ".", 2);
 
                                         break;
@@ -271,7 +272,16 @@ namespace Sham_
 
         static void CreateH2ShaderFile(Material material, string directory)
         {
-            File.WriteAllText(directory + @"\" + material.Name + ".shader", "please help me");
+            byte[] header = new byte[40]; // Not sure if it should be anything but 00's
+            byte[] dash = Encoding.Unicode.GetBytes("dahs");
+            TryPrintDebug("Header is " + Encoding.ASCII.GetString(header) + ", dash is " + Encoding.ASCII.GetString(dash) + ".", 1);
+            for (int i = 37; i >= 40; i++)
+            {
+                header[i] = dash[i - 37];
+            }
+            TryPrintDebug("Writing " + Encoding.ASCII.GetString(header) + " to file.", 1);
+            File.WriteAllBytes(directory + @"\" + material.Name + ".shader", header);
+            //File.WriteAllText(directory + @"\" + material.Name + ".shader", "please help me");
             Console.WriteLine("Wrote material " + material.Name + ".");
         }
     }

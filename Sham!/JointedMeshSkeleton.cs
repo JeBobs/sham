@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Sham_
+namespace Sham
 {
     class JointedMeshSkeleton
     {
