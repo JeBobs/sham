@@ -24,17 +24,13 @@ namespace Sham
             // Handle Arguments
             string FilePath = "";
             string Command = "";
+            string argument = "";
             if (args.Length > 0)
             {
                 Command = args[0].ToLower();
                 if (args.Length > 1) FilePath = args[1];
-                if (args.Length > 2)
-                {
-                    if (!int.TryParse(args[2], out DebugLevel))
-                    {
-                        Console.WriteLine("Error specifying debug level! Using debug level 0.");
-                    }
-                }
+                if (!int.TryParse(args[args.Length - 1], out DebugLevel)) DebugLevel = -1;
+                if (args.Length > 2)  argument = args[2];
             }
 
             // Initialize Debug
@@ -42,12 +38,15 @@ namespace Sham
             {
                 Console.Write("Passed with arguments ");
                 foreach (string s in args) Console.Write(s + " ");
-                Console.WriteLine();
+                PrintHeader("Debug Level is " + DebugLevel);
             }
 
             // Parse Command
             switch (Command)
             {
+                case "jmcompress":
+                    Command_JMCompress(FilePath, argument);
+                    break;
                 case "generateh2shaders":
                     Command_GenerateH2Shaders(FilePath);
                     break;
@@ -70,13 +69,14 @@ namespace Sham
             Console.WriteLine(); // White Space
 
             string directory = Directory.CreateDirectory(new FileInfo(FilePath).Directory.FullName + @"\shaders").FullName;
+            FileConflictProperties props = new FileConflictProperties();
             foreach (Material m in Header.Materials)
             {
                 if (!Directory.Exists(directory))
                 {
                     TryPrintDebug("Attempting to create directory at " + directory + @"\shaders" + ".", 2);
                 }
-                CreateH2ShaderFile(m, directory);
+                CreateH2ShaderFile(m, directory, props);
             }
             PrintTask("Wrote shaders to \"shaders\" directory in the JMS folder", true);
         }
@@ -106,6 +106,45 @@ namespace Sham
                     break;
             }
             Console.WriteLine(h);
+        }
+
+        static void Command_JMCompress(string FilePath, string outPath)
+        {
+            if (string.IsNullOrEmpty(outPath))
+            {
+                Console.WriteLine("No output path specified, outputting to the source folder.");
+                outPath = FilePath;
+            }
+            //TryPrintDebug("Compress JMS/JMA is not implemented yet.", 0);
+
+            PrintTask("Starting jointed mesh file compression operation");
+
+            string[] output = CompressJMFile(FilePath);
+            string directory = Directory.CreateDirectory(new FileInfo(FilePath).Directory.FullName).FullName;
+
+            string ogFileName = Path.GetFileNameWithoutExtension(FilePath);
+            string extension = Path.GetFileName(FilePath).Replace(ogFileName, "");
+
+            string finalName = ogFileName + "_compressed" + extension;
+            string finalPath = directory + @"\" + finalName;
+
+            TryPrintDebug("Final file path is " + finalPath + ".", 1);
+
+            FileConflictProperties props = new FileConflictProperties();
+
+            if (File.Exists(finalPath))
+            {
+                props.shouldContinue = FileExistsConditional(directory, finalName, props);
+            }
+            else props.shouldContinue = true;
+            if (props.shouldContinue)
+            {
+                PrintTask("Writing compressed jointed mesh file to disk");
+                File.WriteAllLines(finalPath, output);
+                PrintTask("Wrote compressed jointed mesh file", true);
+            }
+
+            PrintTask("Completed compression operation", true);
         }
 
         public static JMSHeader ParseJMSHeader(string path)
@@ -272,29 +311,54 @@ namespace Sham
             }
         }
 
-        // TODO: Completely redo this with structure refactor
-        static bool setAlwaysContinue;
-        static bool alwaysShouldContinue;
-        static void CreateH2ShaderFile(Material material, string directory)
+        public static string[] CompressJMFile(string path)
         {
-            bool shouldContinue = false;
-            shouldContinue = alwaysShouldContinue;
+            if (!path.ToLower().Contains("jm"))
+            {
+                Console.WriteLine("File does not appear to be a jms/jma file! Other formats may be supported at a later date, sorry.");
+                return new string[0];
+            }
+            else
+            {
+                PrintTask("Creating compressed buffer for " + path);
+                List<string> compressed = new List<string>();
+                string[] h = File.ReadAllLines(path);
+                foreach (string line in h)
+                {
+                    TryPrintDebug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " + line, 4);
+                    if (!line.StartsWith(";", StringComparison.OrdinalIgnoreCase)&& !line.StartsWith(Environment.NewLine, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(line))
+                    {
+                        compressed.Add(line);
+                        TryPrintDebug("Adding line " + line, 3);
+                    }
+                    else
+                    {
+                        TryPrintDebug("Ignoring line " + line, 2);
+                    }
+                }
+                PrintTask("Finished creating compressed buffer", true);
+                return compressed.ToArray();
+            }
+        }
+
+        static void CreateH2ShaderFile(Material material, string directory, FileConflictProperties props)
+        {
             if (File.Exists(directory + @"\" + material.Name + ".shader"))
             {
-                if (!setAlwaysContinue) shouldContinue = FileExistsConditional(directory, material.Name + ".shader", shouldContinue);
-                else if (!alwaysShouldContinue)
+                if (!props.setAlwaysContinue) props.shouldContinue = FileExistsConditional(directory, material.Name + ".shader", props);
+                else if (!props.alwaysShouldContinue)
                 {
                     NotifyFileSkip(material.Name + ".shader");
                     return;
                 }
-                if (shouldContinue)
+                if (props.shouldContinue)
                 {
                     File.Delete(directory + @"\" + material.Name + ".shader");
                     TryPrintDebug("Deleting " + directory + @"\" + material.Name + ".shader.", 2);
                 }
             }
-            else shouldContinue = true;
-            if (!shouldContinue)
+            else props.shouldContinue = true;
+            if (!props.shouldContinue)
             {
                 TryPrintDebug("Shouldn't continue creating H2 shader file for one reason or another.", 4);
                 return;
@@ -349,41 +413,6 @@ namespace Sham
             stream.Dispose();
 
             Console.WriteLine("Wrote material " + material.Name + ".");
-        }
-
-        // TODO: Move to UserInterface an Bitfield for multiple bool i/o
-        static bool FileExistsConditional(string directory, string fileName, bool externShouldContinue)
-        {
-            if (externShouldContinue) return externShouldContinue;
-
-            Console.WriteLine("File " + directory + @"\" + fileName + " exists, overwrite?");
-            Console.WriteLine("(preface with * to apply to all occurrences)");
-
-            string input = Console.ReadLine();
-
-            if (input.ToLower() == "*" || string.IsNullOrEmpty(input)) FileExistsConditional(directory, fileName, externShouldContinue);
-
-            switch (input.ToLower().Substring( 0, 1))
-            {
-                case "*":
-                    setAlwaysContinue = true;
-                    alwaysShouldContinue = GetBoolFromString(input.ToLower().Substring(1, 1));
-                    externShouldContinue = GetBoolFromString(input.ToLower().Substring(1, 1));
-                    if (!externShouldContinue) NotifyFileSkip(fileName);
-                    break;
-
-                case "y":
-                    externShouldContinue = true;
-                    break;
-
-                case "n":
-                case "hell naw":
-                default:
-                    externShouldContinue = false;
-                    NotifyFileSkip(fileName);
-                    break;
-            }
-            return externShouldContinue;
         }
     }
 }
