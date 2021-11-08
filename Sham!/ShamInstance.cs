@@ -11,7 +11,7 @@ using static Sham.Gen2Shader;
 
 namespace Sham
 {
-    class Program
+    class ShamInstance
     {
         public static int DebugLevel;
         public static AssemblyName AppInfo;

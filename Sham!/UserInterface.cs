@@ -17,7 +17,7 @@ namespace Sham
 
         public static void TryPrintDebug(string text, int level)
         {
-            if (Program.DebugLevel >= level) Console.WriteLine("DEBUG L" + level + ": " + text);
+            if (ShamInstance.DebugLevel >= level) Console.WriteLine("DEBUG L" + level + ": " + text);
         }
 
         public static void NotifyFileSkip(string filePath)
