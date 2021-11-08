@@ -29,7 +29,7 @@ Sham! will run on any OS capable of running .NET Framework 4.0, including but no
   <li>Windows 8/8.1</li>
   <li>Windows 10</li>
   <li>Windows 11</li>
-  <li>Linux (Through Wine)</li>
+  <li>Linux (Through Mono/Wine)</li>
 </ul>
 
 ## Build Instructions
