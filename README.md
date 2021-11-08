@@ -2,6 +2,14 @@
 A C# command-line tool with various abilities to help Halo content creation by interfacing with various file formats (JMS, etc).
 This app is still very early in development. Features and code structure is subject to change.
 
+# Usage
+## Installing & Running
+<ul>
+<li>Check the releases page for the latest stable version of Sham!</li>
+<li>Download the executable archive & unzip the package into your H2EK or H3EK directory.</li>
+<li>Run using your favorite command-line program (cmd, PowerShell, Windows Terminal, Hyper, Bash, etc).</li> 
+</ul>
+            
 ## Commands
 #### Implemented:
             help <command> - Either shows the help screen or provides help for a command.
@@ -10,7 +18,7 @@ This app is still very early in development. Features and code structure is subj
             
 #### Planned:
             GenerateH3Shaders [JMS File] - Generates empty Halo 3 compatible shader files for each material slot.
-            
+
 ## Compatibility
 Sham! will run on any OS capable of running .NET Framework 4.0, including but not limited to:
 <ul>
