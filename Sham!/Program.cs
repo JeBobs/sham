@@ -15,7 +15,6 @@ namespace Sham
     {
         public static int DebugLevel;
         public static AssemblyName AppInfo;
-        public static string PathSeparator = @"\";
         static void Main(string[] args)
         {
             // Title Bar

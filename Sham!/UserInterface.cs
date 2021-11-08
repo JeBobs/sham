@@ -4,6 +4,7 @@ namespace Sham
 {
     class UserInterface
     {
+        public static string PathSeparator = @"\";
         public static void PrintHeader(string text)
         {
             Console.WriteLine("\n-------------------------\n" + text + "\n-------------------------\n");
@@ -39,7 +40,7 @@ namespace Sham
         {
             if (properties.shouldContinue) return properties.shouldContinue;
 
-            Console.WriteLine("File " + directory + @"\" + fileName + " exists, overwrite?");
+            Console.WriteLine("File " + directory + PathSeparator + fileName + " exists, overwrite?");
             Console.WriteLine("(preface with * to apply to all occurrences)");
 
             string input = Console.ReadLine();
