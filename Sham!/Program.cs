@@ -15,6 +15,7 @@ namespace Sham
     {
         public static int DebugLevel;
         public static AssemblyName AppInfo;
+        public static string PathSeparator = @"\";
         static void Main(string[] args)
         {
             // Title Bar
@@ -39,6 +40,12 @@ namespace Sham
                 Console.Write("Passed with arguments ");
                 foreach (string s in args) Console.Write(s + " ");
                 PrintHeader("Debug Level is " + DebugLevel);
+            }
+
+            // Basic Linux Path Support
+            if (Directory.GetCurrentDirectory().Substring(0,1) == "/")
+            {
+                PathSeparator = @"/";
             }
 
             // Parse Command
@@ -69,15 +76,15 @@ namespace Sham
             PrintTask("Creating Halo 2 shader files");
             Console.WriteLine(); // White Space
 
-            string directory = Directory.CreateDirectory(new FileInfo(FilePath).Directory.FullName + @"\shaders").FullName;
+            string directory = Directory.CreateDirectory(new FileInfo(FilePath).Directory.FullName + PathSeparator + "shaders").FullName;
             FileConflictProperties props = new FileConflictProperties();
             foreach (Material m in Header.Materials)
             {
                 if (!Directory.Exists(directory))
                 {
-                    TryPrintDebug("Attempting to create directory at " + directory + @"\shaders" + ".", 2);
+                    TryPrintDebug("Attempting to create directory at " + directory + PathSeparator + "shaders" + ".", 2);
                 }
-                CreateH2ShaderFile(m, directory, props);
+                CreateH2ShaderFile(m, directory, ref props);
             }
             PrintTask("Wrote shaders to \"shaders\" directory in the JMS folder", true);
         }
@@ -131,7 +138,7 @@ namespace Sham
             string extension = Path.GetFileName(FilePath).Replace(ogFileName, "");
 
             string finalName = ogFileName + "_compressed" + extension;
-            string finalPath = directory + @"\" + finalName;
+            string finalPath = directory + PathSeparator + finalName;
 
             TryPrintDebug("Final file path is " + finalPath + ".", 1);
 
@@ -139,7 +146,7 @@ namespace Sham
 
             if (File.Exists(finalPath))
             {
-                props.shouldContinue = FileExistsConditional(directory, finalName, props);
+                props.shouldContinue = FileExistsConditional(directory, finalName, ref props);
             }
             else props.shouldContinue = true;
             if (props.shouldContinue)
@@ -346,11 +353,11 @@ namespace Sham
             }
         }
 
-        static void CreateH2ShaderFile(Material material, string directory, FileConflictProperties props)
+        static void CreateH2ShaderFile(Material material, string directory, ref FileConflictProperties props)
         {
-            if (File.Exists(directory + @"\" + material.Name + ".shader"))
+            if (File.Exists(directory + PathSeparator + material.Name + ".shader"))
             {
-                if (!props.setAlwaysContinue) props.shouldContinue = FileExistsConditional(directory, material.Name + ".shader", props);
+                if (!props.setAlwaysContinue) props.shouldContinue = FileExistsConditional(directory, material.Name + ".shader", ref props);
                 else if (!props.alwaysShouldContinue)
                 {
                     NotifyFileSkip(material.Name + ".shader");
@@ -358,8 +365,8 @@ namespace Sham
                 }
                 if (props.shouldContinue)
                 {
-                    File.Delete(directory + @"\" + material.Name + ".shader");
-                    TryPrintDebug("Deleting " + directory + @"\" + material.Name + ".shader.", 2);
+                    File.Delete(directory + PathSeparator + material.Name + ".shader");
+                    TryPrintDebug("Deleting " + directory + PathSeparator + material.Name + ".shader.", 2);
                 }
             }
             else props.shouldContinue = true;
@@ -368,7 +375,7 @@ namespace Sham
                 TryPrintDebug("Shouldn't continue creating H2 shader file for one reason or another.", 4);
                 return;
             }
-            FileStream stream = new FileStream(directory + @"\" + material.Name + ".shader", FileMode.Append);
+            FileStream stream = new FileStream(directory + PathSeparator + material.Name + ".shader", FileMode.Append);
             List<byte> fileBuffer = new List<byte>();
 
             // Looks really bad right now, but will possibly be very useful for manupulating bits to support other versions.

@@ -35,7 +35,7 @@ namespace Sham
             return "\t" + command + "\n";
         }
 
-        public static bool FileExistsConditional(string directory, string fileName, FileConflictProperties properties)
+        public static bool FileExistsConditional(string directory, string fileName, ref FileConflictProperties properties)
         {
             if (properties.shouldContinue) return properties.shouldContinue;
 
@@ -44,7 +44,7 @@ namespace Sham
 
             string input = Console.ReadLine();
 
-            if (input.ToLower() == "*" || string.IsNullOrEmpty(input)) FileExistsConditional(directory, fileName, properties);
+            if (input.ToLower() == "*" || string.IsNullOrEmpty(input)) FileExistsConditional(directory, fileName, ref properties);
 
             switch (input.ToLower().Substring(0, 1))
             {
