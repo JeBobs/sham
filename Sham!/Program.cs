@@ -51,7 +51,8 @@ namespace Sham
                     Command_GenerateH2Shaders(FilePath);
                     break;
                 case "help":
-                    string arg = args.Length > 2 ? args[1] : "";
+                    string arg = "";
+                    if (args.Length >= 2) arg = args[1];
                     Command_Help(arg);
                     break;
                 case "":
@@ -87,22 +88,22 @@ namespace Sham
             Console.WriteLine("Help for " + h + ":");
 
             h = "\n\t[ ] indicates a required argument.\n\t< > indicates an optional argument.\n\n";
+            TryPrintDebug("Input help command is " + command, 4);
             switch (command)
             {
                 case "generateh2shaders":
-                    h += CommandHelp[(int)Command.GenerateH2Shaders];
+                    h += AddHelpEntry(CommandHelp[(int)Command.GenerateH2Shaders]);
                     break;
 
                 case "generateh3shaders":
-                    h += CommandHelp[(int)Command.GenerateH3Shaders];
+                    h += AddHelpEntry(CommandHelp[(int)Command.GenerateH3Shaders]);
                     break;
-
+                case "jmcompress":
+                    h += AddHelpEntry(CommandHelp[(int)Command.JMCompress]);
+                    break;
                 case "help":
                 default:
-                    foreach (string s in CommandHelp)
-                    {
-                        h += "\t" + s + "\n";
-                    }
+                    foreach (string s in CommandHelp) h += AddHelpEntry(s);
                     break;
             }
             Console.WriteLine(h);
@@ -110,12 +111,16 @@ namespace Sham
 
         static void Command_JMCompress(string FilePath, string outPath)
         {
+            if (string.IsNullOrEmpty(FilePath))
+            {
+                Console.WriteLine("No valid file was specified! Please check Help to view the valid syntax.");
+                return;
+            }
             if (string.IsNullOrEmpty(outPath))
             {
                 Console.WriteLine("No output path specified, outputting to the source folder.");
                 outPath = FilePath;
             }
-            //TryPrintDebug("Compress JMS/JMA is not implemented yet.", 0);
 
             PrintTask("Starting jointed mesh file compression operation");
 

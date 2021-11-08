@@ -33,6 +33,11 @@ namespace Sham
             return h == "y" ? true : false;
         }
 
+        public static string AddHelpEntry(string command)
+        {
+            return "\t" + command + "\n";
+        }
+
         public static bool FileExistsConditional(string directory, string fileName, FileConflictProperties properties)
         {
             if (properties.shouldContinue) return properties.shouldContinue;
