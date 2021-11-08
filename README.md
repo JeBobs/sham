@@ -6,10 +6,10 @@ This app is still very early in development. Features and code structure is subj
 #### Implemented:
             help <command> - Either shows the help screen or provides help for a command.
             GenerateH2Shaders [JMS File] - Generates empty Halo 2 compatible shader files for each material slot.
+            JMCompress [JMS/JMA Variant File] <output path> - Takes an input JMS/JMA/JMM/JMO/JMI file and removes white-space & comments.
             
 #### Planned:
             GenerateH3Shaders [JMS File] - Generates empty Halo 3 compatible shader files for each material slot.
-            CompressJMS [JMS File] - Takes an input JMS file and removes white-space & comments.
             
 ## Compatibility
 Sham! will run on any OS capable of running .NET Framework 4.0, including but not limited to:
