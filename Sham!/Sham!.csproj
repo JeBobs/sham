@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0C63FB5F-0E05-481B-A49F-9C3719BC9618}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Sham_</RootNamespace>
+    <RootNamespace>Sham</RootNamespace>
     <AssemblyName>Sham!</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandDirectory.cs" />
+    <Compile Include="Gen2Shader.cs" />
     <Compile Include="JointedMeshSkeleton.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
