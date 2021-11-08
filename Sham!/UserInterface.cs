@@ -22,5 +22,15 @@ namespace Sham
         {
             if (Program.DebugLevel >= level) Console.WriteLine("DEBUG L" + level + ": " + text);
         }
+
+        public static void NotifyFileSkip(string filePath)
+        {
+            Console.WriteLine("Skipping " + filePath + ".");
+        }
+
+        public static bool GetBoolFromString(string h)
+        {
+            return h == "y" ? true : false;
+        }
     }
 }

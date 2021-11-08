@@ -2,10 +2,12 @@
 using System.IO;
 using System.Text;
 using System.Reflection;
+using System.Collections.Generic;
 
 using static Sham.JointedMeshSkeleton;
 using static Sham.CommandDirectory;
 using static Sham.UserInterface;
+using static Sham.Gen2Shader;
 
 namespace Sham
 {
@@ -67,9 +69,9 @@ namespace Sham
             PrintTask("Creating Halo 2 shader files");
             Console.WriteLine(); // White Space
 
+            string directory = Directory.CreateDirectory(new FileInfo(FilePath).Directory.FullName + @"\shaders").FullName;
             foreach (Material m in Header.Materials)
             {
-                string directory = Directory.CreateDirectory(new FileInfo(FilePath).Directory.FullName + @"\shaders").FullName;
                 if (!Directory.Exists(directory))
                 {
                     TryPrintDebug("Attempting to create directory at " + directory + @"\shaders" + ".", 2);
@@ -270,19 +272,118 @@ namespace Sham
             }
         }
 
+        // TODO: Completely redo this with structure refactor
+        static bool setAlwaysContinue;
+        static bool alwaysShouldContinue;
         static void CreateH2ShaderFile(Material material, string directory)
         {
-            byte[] header = new byte[40]; // Not sure if it should be anything but 00's
-            byte[] dash = Encoding.Unicode.GetBytes("dahs");
-            TryPrintDebug("Header is " + Encoding.ASCII.GetString(header) + ", dash is " + Encoding.ASCII.GetString(dash) + ".", 1);
-            for (int i = 37; i >= 40; i++)
+            bool shouldContinue = false;
+            shouldContinue = alwaysShouldContinue;
+            if (File.Exists(directory + @"\" + material.Name + ".shader"))
             {
-                header[i] = dash[i - 37];
+                if (!setAlwaysContinue) shouldContinue = FileExistsConditional(directory, material.Name + ".shader", shouldContinue);
+                else if (!alwaysShouldContinue)
+                {
+                    NotifyFileSkip(material.Name + ".shader");
+                    return;
+                }
+                if (shouldContinue)
+                {
+                    File.Delete(directory + @"\" + material.Name + ".shader");
+                    TryPrintDebug("Deleting " + directory + @"\" + material.Name + ".shader.", 2);
+                }
             }
-            TryPrintDebug("Writing " + Encoding.ASCII.GetString(header) + " to file.", 1);
-            File.WriteAllBytes(directory + @"\" + material.Name + ".shader", header);
-            //File.WriteAllText(directory + @"\" + material.Name + ".shader", "please help me");
+            else shouldContinue = true;
+            if (!shouldContinue)
+            {
+                TryPrintDebug("Shouldn't continue creating H2 shader file for one reason or another.", 4);
+                return;
+            }
+            FileStream stream = new FileStream(directory + @"\" + material.Name + ".shader", FileMode.Append);
+            List<byte> fileBuffer = new List<byte>();
+
+            // Looks really bad right now, but will possibly be very useful for manupulating bits to support other versions.
+
+            byte[] dash = Encoding.ASCII.GetBytes("dahs");
+            byte[] shadertype = Encoding.GetEncoding("ISO-8859-1").GetBytes(ShaderModelString[(int)ShaderTemplate.nil]);
+            byte at = Convert.ToByte(64);
+            byte unk = Convert.ToByte(1);
+            byte[] unk2 = Encoding.GetEncoding("ISO-8859-1").GetBytes("ÿ!MLBdfbt");
+            byte unk3 = Convert.ToByte(128);
+            byte[] unk4 = Encoding.GetEncoding("ISO-8859-1").GetBytes("mets");
+            byte[] unkOptions = new byte[8]; // #0A0A
+            byte[] unk5 = Encoding.GetEncoding("ISO-8859-1").GetBytes("ÿÿÿÿ");
+            byte[] tils = Encoding.GetEncoding("ISO-8859-1").GetBytes("tils");
+
+            // #0A0A - Clearly options, will implement later with more research.
+            // 5th bit:
+            // 00 -- null
+            // 28 -- tex_bump
+            // 2C -- illum_detail
+            // 2E -- tex_bump_shiny
+
+            // I know this is ew. I'll make it better later
+            fileBuffer.AddRange(new byte[36]);
+            fileBuffer.AddRange(dash);
+            fileBuffer.AddRange(shadertype);
+            fileBuffer.Add(at);
+            fileBuffer.AddRange(new byte[11]);
+            fileBuffer.Add(unk);
+            fileBuffer.AddRange(new byte[2]);
+            fileBuffer.AddRange(unk2);
+            fileBuffer.AddRange(new byte[4]);
+            fileBuffer.Add(unk);
+            fileBuffer.AddRange(new byte[3]);
+            fileBuffer.Add(unk3);
+            fileBuffer.AddRange(new byte[3]);
+            fileBuffer.AddRange(unk4);
+            fileBuffer.AddRange(unkOptions);
+            fileBuffer.AddRange(unk5);
+            fileBuffer.AddRange(new byte[60]); // LOTS OF OPTIONS HERE, HAVE TO FILL OUT!
+            fileBuffer.AddRange(tils);
+            fileBuffer.AddRange(new byte[8]);
+            fileBuffer.AddRange(unk5);
+            fileBuffer.AddRange(new byte[36]);
+
+            stream.Write(fileBuffer.ToArray(), 0, fileBuffer.Count);
+            stream.Dispose();
+
             Console.WriteLine("Wrote material " + material.Name + ".");
+        }
+
+        // TODO: Move to UserInterface an Bitfield for multiple bool i/o
+        static bool FileExistsConditional(string directory, string fileName, bool externShouldContinue)
+        {
+            if (externShouldContinue) return externShouldContinue;
+
+            Console.WriteLine("File " + directory + @"\" + fileName + " exists, overwrite?");
+            Console.WriteLine("(preface with * to apply to all occurrences)");
+
+            string input = Console.ReadLine();
+
+            if (input.ToLower() == "*" || string.IsNullOrEmpty(input)) FileExistsConditional(directory, fileName, externShouldContinue);
+
+            switch (input.ToLower().Substring( 0, 1))
+            {
+                case "*":
+                    setAlwaysContinue = true;
+                    alwaysShouldContinue = GetBoolFromString(input.ToLower().Substring(1, 1));
+                    externShouldContinue = GetBoolFromString(input.ToLower().Substring(1, 1));
+                    if (!externShouldContinue) NotifyFileSkip(fileName);
+                    break;
+
+                case "y":
+                    externShouldContinue = true;
+                    break;
+
+                case "n":
+                case "hell naw":
+                default:
+                    externShouldContinue = false;
+                    NotifyFileSkip(fileName);
+                    break;
+            }
+            return externShouldContinue;
         }
     }
 }
