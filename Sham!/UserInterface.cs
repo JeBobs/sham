@@ -2,7 +2,7 @@
 
 namespace Sham
 {
-    class UserInterface
+    public class UserInterface
     {
         public static string PathSeparator = @"\";
         public static void PrintHeader(string text)
@@ -19,6 +19,16 @@ namespace Sham
         public static void TryPrintDebug(string text, int level)
         {
             if (ShamInstance.DebugLevel >= level) Console.WriteLine("DEBUG L" + level + ": " + text);
+        }
+
+        public static void PrintLine(string text)
+        {
+            Console.WriteLine(text);
+        }
+
+        public static void Print(string text)
+        {
+            Console.Write(text);
         }
 
         public static void NotifyFileSkip(string filePath)
@@ -40,8 +50,8 @@ namespace Sham
         {
             if (properties.shouldContinue) return properties.shouldContinue;
 
-            Console.WriteLine("File " + directory + PathSeparator + fileName + " exists, overwrite?");
-            Console.WriteLine("(preface with * to apply to all occurrences)");
+            PrintLine("File " + directory + PathSeparator + fileName + " exists, overwrite?");
+            PrintLine("(preface with * to apply to all occurrences)");
 
             string input = Console.ReadLine();
 
