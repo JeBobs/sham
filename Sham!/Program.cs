@@ -8,6 +8,7 @@ using static Sham.CommandDirectory;
 using static Sham.UserInterface;
 
 using static Sham.Halo.Commands_Halo;
+using static Sham.Burnout.Commands_Burnout;
 
 namespace Sham
 {
@@ -50,11 +51,14 @@ namespace Sham
             // Parse Command
             switch (Command)
             {
-                case "jmcompress":
-                    Command_JMCompress(FilePath, argument);
-                    break;
-                case "generateh2shaders":
-                    Command_GenerateH2Shaders(FilePath);
+                //case "jmcompress":
+                //    Command_JMCompress(FilePath, argument);
+                //    break;
+                //case "generateh2shaders":
+                //    Command_GenerateH2Shaders(FilePath);
+                //    break;
+                case "revmap":
+                    Command_RevMap(FilePath);
                     break;
                 case "help":
                     string arg = "";
@@ -77,15 +81,18 @@ namespace Sham
             TryPrintDebug("Input help command is " + command, 4);
             switch (command)
             {
-                case "generateh2shaders":
-                    h += AddHelpEntry(CommandHelp[(int)Command.GenerateH2Shaders]);
-                    break;
-
-                case "generateh3shaders":
-                    h += AddHelpEntry(CommandHelp[(int)Command.GenerateH3Shaders]);
-                    break;
-                case "jmcompress":
-                    h += AddHelpEntry(CommandHelp[(int)Command.JMCompress]);
+                //case "generateh2shaders":
+                //    h += AddHelpEntry(CommandHelp[(int)Command.GenerateH2Shaders]);
+                //    break;
+                //
+                //case "generateh3shaders":
+                //    h += AddHelpEntry(CommandHelp[(int)Command.GenerateH3Shaders]);
+                //    break;
+                //case "jmcompress":
+                //    h += AddHelpEntry(CommandHelp[(int)Command.JMCompress]);
+                //    break;
+                case "revmap":
+                    h += AddHelpEntry(CommandHelp[(int)Command.RevMap]);
                     break;
                 case "help":
                 default:

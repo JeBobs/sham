@@ -4,6 +4,6 @@
     <StartArguments>generateh2shaders fp_sniper_rifle.JMS</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>generateh2shaders fp_sniper_rifle.jms</StartArguments>
+    <StartArguments>revmap "I:\Burnout Paradise\RevMapper\_baseFiles\tcartwright_360\MAP_INTERNAL.BIN" 4</StartArguments>
   </PropertyGroup>
 </Project>
