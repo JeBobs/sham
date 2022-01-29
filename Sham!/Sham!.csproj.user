@@ -4,6 +4,6 @@
     <StartArguments>generateh2shaders fp_sniper_rifle.JMS</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>generateh2shaders fp_sniper_rifle.jms</StartArguments>
+    <StartArguments>convertincludetoshader Z:\Users\Administrator\H3EK\tags\shaders\ _MAGIC_DEBUG 4</StartArguments>
   </PropertyGroup>
 </Project>

@@ -56,6 +56,19 @@ namespace Sham
                 case "generateh2shaders":
                     Command_GenerateH2Shaders(FilePath);
                     break;
+                case "convertincludetoshader": // TODO CLEANUP PLEASE!!!
+                    if (File.GetAttributes(FilePath).HasFlag(FileAttributes.Directory))
+                    {
+                        DirectoryInfo d = new DirectoryInfo(FilePath);
+                        TryPrintDebug("Directory info: \n" + d, 4);
+                        foreach (FileInfo f in d.GetFiles(@"*.hlsl_include"))
+                        {
+                            TryPrintDebug("Foreach path is " + f.FullName + ".", 4);
+                            Command_ConvertIncludeToShader(f.FullName, argument);
+                        }
+                    }
+                    else Command_ConvertIncludeToShader(FilePath, argument);
+                    break;
                 case "help":
                     string arg = "";
                     if (args.Length >= 2) arg = args[1];
@@ -86,6 +99,9 @@ namespace Sham
                     break;
                 case "jmcompress":
                     h += AddHelpEntry(CommandHelp[(int)Command.JMCompress]);
+                    break;
+                case "convertincludetoshader":
+                    h += AddHelpEntry(CommandHelp[(int)Command.ConvertIncludeToShader]);
                     break;
                 case "help":
                 default:

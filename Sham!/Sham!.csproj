@@ -64,6 +64,7 @@
     <Compile Include="Halo\JMS\JointedMeshCommon.cs" />
     <Compile Include="Halo\Shader\Gen2Shader.cs" />
     <Compile Include="Halo\JMS\JointedMeshSkeleton.cs" />
+    <Compile Include="Halo\Shader\ShaderIncludeConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strings.Designer.cs">
