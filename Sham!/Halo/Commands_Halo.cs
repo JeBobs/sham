@@ -79,7 +79,7 @@ namespace Sham.Halo
             PrintTask("Completed compression operation", true);
         }
 
-        public static void Command_ConvertIncludeToShader(string FilePath, string outPath)
+        public static void Command_IncludeToShader(string FilePath, string outPath)
         {
             PrintTask("Starting include tag file conversion operation");
 
