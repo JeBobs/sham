@@ -93,7 +93,7 @@ namespace Sham.Halo
             
             TryPrintDebug("Directory file path is " + directory + ".", 1);
 
-            if (string.IsNullOrEmpty(outPath) || outPath.Contains("_MAGIC_DEBUG"))
+            if (string.IsNullOrEmpty(outPath))
             {
                 PrintLine("No output path specified, outputting to \"_converted\" folder.");
                 outPath = directory + PathSeparator + "_converted";

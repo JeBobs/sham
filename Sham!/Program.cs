@@ -47,6 +47,10 @@ namespace Sham
                 PathSeparator = @"/";
             }
 
+            // Magic Debug Option 
+            // (Allows us to pass null file paths while retaining a debug level)
+            if (argument == "_MAGIC_DEBUG") argument = null;
+
             // Parse Command
             switch (Command)
             {
