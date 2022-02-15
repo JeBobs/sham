@@ -11,7 +11,7 @@ using static Sham.Halo.Commands_Halo;
 
 namespace Sham
 {
-    class ShamInstance
+    public class ShamInstance
     {
         public static int DebugLevel;
         public static AssemblyName AppInfo;

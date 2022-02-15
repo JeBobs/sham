@@ -79,6 +79,12 @@ namespace Sham.Halo
             PrintTask("Completed compression operation", true);
         }
 
+        public static void Command_H3ToReachFPAnimation(string FilePath, string outPath)
+        {
+
+            PrintTask("Completed conversion operation", true);
+        }
+
         public static void Command_IncludeToShader(string FilePath, string outPath)
         {
             PrintTask("Starting include tag file conversion operation");
