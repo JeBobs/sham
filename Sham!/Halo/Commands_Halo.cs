@@ -65,10 +65,10 @@ namespace Sham.Halo
             FileConflictProperties props = new FileConflictProperties();
 
             if (File.Exists(finalPath))
-            {
                 props.shouldContinue = FileExistsConditional(directory, finalName, ref props);
-            }
-            else props.shouldContinue = true;
+            else 
+                props.shouldContinue = true;
+
             if (props.shouldContinue)
             {
                 PrintTask("Writing compressed jointed mesh file to disk");

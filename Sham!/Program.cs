@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Reflection;
-using System.Collections.Generic;
 
 using static Sham.CommandDirectory;
 using static Sham.UserInterface;
 
 using static Sham.Halo.Commands_Halo;
+using Sham.Properties;
 
 namespace Sham
 {
@@ -19,7 +17,8 @@ namespace Sham
         {
             // Title Bar
             AppInfo = Assembly.GetEntryAssembly().GetName();
-            PrintLine(AppInfo.Name + " Version " + AppInfo.Version + " - Made with <3 by JeBobs");
+            
+            PrintLine(AppInfo.Name + StringResources.Text_Version + AppInfo.Version + StringResources.Text_MadeWithLove);
 
             // Handle Arguments
             string FilePath = "";

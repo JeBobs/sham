@@ -1,24 +1,31 @@
-﻿using System;
+﻿using Sham.Properties;
+using System;
+using System.IO;
 
 namespace Sham
 {
     public class UserInterface
     {
-        public static string PathSeparator = @"\";
+        // Still have yet to try this new method on *nix!
+        public static string PathSeparator = Path.DirectorySeparatorChar.ToString();
+
+        // Useful if we want to output text another way in the future,
+        // Or if we want to eventually support other languages.
+
         public static void PrintHeader(string text)
         {
-            Console.WriteLine("\n-------------------------\n" + text + "\n-------------------------\n");
+            Console.WriteLine(StringResources.HeaderLarge + text + StringResources.HeaderLarge);
         }
 
         public static void PrintTask(string text, bool complete = false)
         {
-            if (complete) Console.WriteLine("\n --- ✓ " + text + ".");
-            else Console.WriteLine("\n --- ■ " + text + "...");
+            Console.WriteLine("\n ---" + (complete ? " ✓ " : " ■ ") + text + "...");
         }
 
         public static void TryPrintDebug(string text, int level)
         {
-            if (ShamInstance.DebugLevel >= level) Console.WriteLine("DEBUG L" + level + ": " + text);
+            if (ShamInstance.DebugLevel >= level) 
+                Console.WriteLine(StringResources.Text_DebugLevel + level + ": " + text);
         }
 
         public static void PrintLine(string text)
@@ -46,16 +53,20 @@ namespace Sham
             return "\t" + command + "\n";
         }
 
+        // Should probably be moved elsewhere at some point
+
         public static bool FileExistsConditional(string directory, string fileName, ref FileConflictProperties properties)
         {
-            if (properties.shouldContinue) return properties.shouldContinue;
+            if (properties.shouldContinue) 
+                return properties.shouldContinue;
 
-            PrintLine("File " + directory + PathSeparator + fileName + " exists, overwrite?");
+            PrintLine(string.Format(StringResources.Text_FileExistsOverwritePrompt, directory + PathSeparator + fileName));
             PrintLine("(preface with * to apply to all occurrences)");
 
             string input = Console.ReadLine();
 
-            if (input.ToLower() == "*" || string.IsNullOrEmpty(input)) FileExistsConditional(directory, fileName, ref properties);
+            if (input.ToLower() == "*" || string.IsNullOrEmpty(input)) 
+                FileExistsConditional(directory, fileName, ref properties);
 
             switch (input.ToLower().Substring(0, 1))
             {
