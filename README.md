@@ -1,4 +1,5 @@
 # Sham!
+#### Currently working on a major rewrite!
 A C# command-line tool with various abilities to help Halo content creation by interfacing with various file formats (JMS, etc).
 This app is still very early in development. Features and code structure is subject to change.
 
