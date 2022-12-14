@@ -34,7 +34,9 @@ Sham! will run on any OS capable of running .NET Framework 4.0, including but no
 </ul>
 
 ## Build Instructions
-To build Sham!, you only need Visual Studio 2019 with .NET 4.0 features installed. I have not tested other versions of Visual Studio, but as long as you can target NET 4.0 it *should* work.
+To build Sham!, you only need .NET 4.0 features installed. Newer versions of .NET all the way up to .NET 7 work, but if you're targeting the compatibility listed above, you will need to target .NET 4.0. 
+
+Originally I wanted to reach a very broad set of operating systems with one small executable, but I may decide to bump the minimum version if significant improvements are brought using a newer C# version.
 
 ## Contributing
 If you would like to contribute, feel free to create a pull request with your feature.
