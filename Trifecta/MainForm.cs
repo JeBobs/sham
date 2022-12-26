@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using static Sham.UserInterface;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static Trifecta.TrifectaHandler;
+using ListView = System.Windows.Forms.ListView;
 
 namespace Trifecta
 {
@@ -23,6 +24,9 @@ namespace Trifecta
 
             tagsPWD = Directory.GetCurrentDirectory() + PathSeparator + "tags";
             dataPWD = Directory.GetCurrentDirectory() + PathSeparator + "data";
+
+            TagsListView.SmallImageList = ListViewImages;
+            DataListView.SmallImageList = ListViewImages;
 
             PopulateDirectoryListView(TagsListView, tagsPWD, false);
             PopulateDirectoryListView(DataListView, dataPWD, false);
@@ -89,14 +93,16 @@ namespace Trifecta
         void QuickViewVisibilityTest()
         {
             TryPrintDebug("There are currently " + TagsListView.SelectedItems.Count + " tag(s) selected in the view.", 4);
-            TagsQuickToolStrip.Visible = TagsListView.SelectedItems.Count <= 0 ? false : true;
+            TagsQuickToolStrip.Visible = TagsListView.SelectedItems.Count > 0;
             TryPrintDebug("There are currently " + DataListView.SelectedItems.Count + " data file(s) selected in the view.", 4);
-            DataQuickToolStrip.Visible = DataListView.SelectedItems.Count <= 0 ? false : true;
+            DataQuickToolStrip.Visible = DataListView.SelectedItems.Count > 0;
         }
 
         private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             TryPrintDebug("Registered mouse click event on view.", 3);
+
+            TryPrintDebug("Sender type is " + sender.GetType().ToString(), 4);
 
             var senderList = (ListView)sender;
             var clickedItem = senderList.HitTest(e.Location).Item;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -61,10 +62,33 @@ namespace Trifecta
             foreach (string file in directory)
             {
                 TryPrintDebug("Listing file " + file + ".", 2);
+
                 IntPtr himl = NativeMethods.SHGetFileInfo(file, 0, ref shfi, (uint)Marshal.SizeOf(shfi),
                                                             NativeMethods.SHGFI_DISPLAYNAME
                                                             | NativeMethods.SHGFI_SYSICONINDEX
-                                                            | NativeMethods.SHGFI_SMALLICON);
+                                                            | NativeMethods.SHGFI_LARGEICON);
+                
+                if (file.EndsWith("tiff") || file.EndsWith("tif") || file.EndsWith("dds") || file.EndsWith("png"))
+                {
+                    Image img = Image.FromFile(file);
+                    if (img.Size != Size.Empty)
+                    {
+                        int index = Array.IndexOf(directory, file);
+
+                        try
+                        {
+                            list.SmallImageList.Images[index] = img;
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex is IndexOutOfRangeException)
+                            {
+                                list.SmallImageList.Images.Add(img);
+                            }
+                        }
+                    }
+                }
+
                 list.Items.Add(shfi.szDisplayName, shfi.iIcon);
             }
         }
@@ -87,7 +111,7 @@ namespace Trifecta
 
                     if (itemClicked == "..")
                     {
-                        newPWD = Directory.GetParent(PWD).FullName;
+                        newPWD = Directory.GetParent(PWD)?.FullName;
                     }
                     else
                     {
@@ -98,12 +122,9 @@ namespace Trifecta
 
                     string homeDir = Directory.GetCurrentDirectory() + PathSeparator;
 
-                    // Please don't crucify me for this. I promise I'll fix it later. Thanks.
-
                     bool inHomeDirectory =
-                        newPWD == homeDir + "tags\\" || newPWD == homeDir + "tags" ||
-                        newPWD == homeDir + "data\\" || newPWD == homeDir + "data"
-                        ? true : false;
+                        newPWD.Equals(Path.Combine(homeDir, "tags"), StringComparison.OrdinalIgnoreCase) ||
+                        newPWD.Equals(Path.Combine(homeDir, "data"), StringComparison.OrdinalIgnoreCase);
 
                     TryPrintDebug("Being in home directory is " + inHomeDirectory, 4);
 

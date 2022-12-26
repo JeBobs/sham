@@ -53,6 +53,7 @@ namespace Trifecta
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.ListViewImages = new System.Windows.Forms.ImageList(this.components);
             this.DirectoryContainer.SuspendLayout();
             this.TagsTab.SuspendLayout();
             this.TagsQuickToolStrip.SuspendLayout();
@@ -148,10 +149,10 @@ namespace Trifecta
             this.TagsListView.Size = new System.Drawing.Size(901, 187);
             this.TagsListView.TabIndex = 0;
             this.TagsListView.UseCompatibleStateImageBehavior = false;
+            this.TagsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ListView_ItemChangedHandler);
             this.TagsListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.TagsListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListView_MouseClick);
             this.TagsListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ListView_MouseDoubleClick);
-            this.TagsListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ListView_ItemChangedHandler);
             // 
             // DataTab
             // 
@@ -220,10 +221,10 @@ namespace Trifecta
             this.DataListView.Size = new System.Drawing.Size(901, 187);
             this.DataListView.TabIndex = 0;
             this.DataListView.UseCompatibleStateImageBehavior = false;
+            this.DataListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ListView_ItemChangedHandler);
             this.DataListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.DataListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ListView_MouseClick);
             this.DataListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ListView_MouseDoubleClick);
-            this.DataListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ListView_ItemChangedHandler);
             // 
             // DataContextMenu
             // 
@@ -299,6 +300,12 @@ namespace Trifecta
             this.toolStripDropDownButton1.Size = new System.Drawing.Size(38, 25);
             this.toolStripDropDownButton1.Text = "File";
             // 
+            // ListViewImages
+            // 
+            this.ListViewImages.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.ListViewImages.ImageSize = new System.Drawing.Size(16, 16);
+            this.ListViewImages.TransparentColor = System.Drawing.Color.Transparent;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -327,6 +334,7 @@ namespace Trifecta
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion
@@ -352,6 +360,7 @@ namespace Trifecta
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
+        private System.Windows.Forms.ImageList ListViewImages;
     }
 }
 
