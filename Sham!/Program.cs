@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Reflection;
-using System.Collections.Generic;
 
 using static Sham.CommandDirectory;
 using static Sham.UserInterface;
