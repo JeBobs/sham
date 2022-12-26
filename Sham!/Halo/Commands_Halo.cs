@@ -91,7 +91,7 @@ namespace Sham.Halo
 
             if (string.IsNullOrEmpty(FilePath))
             {
-                PrintLine("No valid file was specified! Please check Help to view the valid syntax.");
+                PrintLine("No valid file or folder was specified! Please check Help to view the valid syntax.");
                 return;
             }
 
@@ -102,53 +102,66 @@ namespace Sham.Halo
             if (string.IsNullOrEmpty(outPath))
             {
                 PrintLine("No output path specified, outputting to \"_converted\" folder.");
-                outPath = directory + PathSeparator + "_converted";
+
+                outPath = Directory.CreateDirectory(directory + PathSeparator + "_converted").FullName;
             }
             else outPath = directory;
 
-            byte[] output = ConvertTagIncludeToText(FilePath);
-
-            if (output.Length == 0)
-            {
-                PrintLine("Empty file or incorrect type!");
-                NotifyFileSkip(FilePath);
-                return;
-            }
-
-            string ogFileName = Path.GetFileNameWithoutExtension(FilePath);
-
-            // Listen. There most likely is a better way to do this.
-            // I'm in a rush. I'd like to just get this working so I don't
-            // have to manually edit 350+ files to remove some garbage.
-            // 
-            // I'm going to stop monolouging so I can focus on finishing this.
-
-            // Some possibly useful regex patterns:
-            // _*\.hlsl_include
-            //[a-zA-Z]+
-
-            MatchCollection extMatches = Regex.Matches(ogFileName, @"_[a-zA-Z]+");
-            MatchCollection matches = Regex.Matches(ogFileName, @"[a-zA-Z]+");
-
-            string finalName = ogFileName.Replace(extMatches[extMatches.Count - 1].ToString(), "") + "." + matches[matches.Count - 1].ToString();
-            string finalPath = outPath + PathSeparator + finalName;
-
-            TryPrintDebug("Final file path is " + finalPath + ".", 1);
-
             FileConflictProperties props = new FileConflictProperties();
 
-            if (File.Exists(finalPath))
-            {
-                props.shouldContinue = FileExistsConditional(outPath, finalName, ref props);
-            }
-            else props.shouldContinue = true;
-            if (props.shouldContinue)
-            {
-                PrintTask("Writing converted shader file to disk");
+            byte[] output = new byte[0];
 
-                File.WriteAllBytes(finalPath, output);
+            if (File.GetAttributes(FilePath).HasFlag(FileAttributes.Directory))
+            {
+                DirectoryInfo d = new DirectoryInfo(FilePath);
+                TryPrintDebug("Directory info: \n" + d, 4);
+                foreach (FileInfo f in d.GetFiles(@"*.hlsl_include"))
+                {
+                    TryPrintDebug("Foreach path is " + f.FullName + ".", 4);
 
-                PrintTask("Wrote converted shader file", true);
+                    output = ParseHLSLTagToBytes(f.FullName);
+
+                    if (output.Length == 0)
+                    {
+                        PrintLine("Empty file or incorrect type!");
+                        NotifyFileSkip(f.FullName);
+                        return;
+                    }
+
+                    string ogFileName = Path.GetFileNameWithoutExtension(f.FullName);
+
+                    // Listen. There most likely is a better way to do this.
+                    // I'm in a rush. I'd like to just get this working so I don't
+                    // have to manually edit 350+ files to remove some garbage.
+                    // 
+                    // I'm going to stop monolouging so I can focus on finishing this.
+
+                    // Some possibly useful regex patterns:
+                    // _*\.hlsl_include
+                    //[a-zA-Z]+
+
+                    MatchCollection extMatches = Regex.Matches(ogFileName, @"_[a-zA-Z]+");
+                    MatchCollection matches = Regex.Matches(ogFileName, @"[a-zA-Z]+");
+
+                    string finalName = ogFileName.Replace(extMatches[extMatches.Count - 1].ToString(), "") + "." + matches[matches.Count - 1].ToString();
+                    string finalPath = outPath + PathSeparator + finalName;
+
+                    TryPrintDebug("Final file path is " + finalPath + ".", 1);
+
+                    if (File.Exists(finalPath))
+                    {
+                        props.shouldContinue = FileExistsConditional(outPath, finalName, ref props);
+                    }
+                    else props.shouldContinue = true;
+                    if (props.shouldContinue)
+                    {
+                        PrintTask("Writing converted shader file to disk");
+
+                        File.WriteAllBytes(finalPath, output);
+
+                        PrintTask("Wrote converted shader file", true);
+                    }
+                }
             }
 
             PrintTask("Completed conversion operation", true);

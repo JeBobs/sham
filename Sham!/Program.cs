@@ -60,18 +60,9 @@ namespace Sham
                 case "generateh2shaders":
                     Command_GenerateH2Shaders(FilePath);
                     break;
-                case "includetoshader": // TODO CLEANUP PLEASE!!!
-                    if (File.GetAttributes(FilePath).HasFlag(FileAttributes.Directory))
-                    {
-                        DirectoryInfo d = new DirectoryInfo(FilePath);
-                        TryPrintDebug("Directory info: \n" + d, 4);
-                        foreach (FileInfo f in d.GetFiles(@"*.hlsl_include"))
-                        {
-                            TryPrintDebug("Foreach path is " + f.FullName + ".", 4);
-                            Command_IncludeToShader(f.FullName, argument);
-                        }
-                    }
-                    else Command_IncludeToShader(FilePath, argument);
+                case "convertincludetoshader":
+                case "includetoshader":
+                    Command_IncludeToShader(FilePath, argument);
                     break;
                 case "help":
                     string arg = "";
